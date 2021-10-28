@@ -2,7 +2,7 @@
     "name": "wafto/event-sourcing-todo",
     "autoload": {
         "psr-4": {
-            "Todo\\": "src/"
+            "App\\": "src/"
         }
     },
     "autoload-dev": {
