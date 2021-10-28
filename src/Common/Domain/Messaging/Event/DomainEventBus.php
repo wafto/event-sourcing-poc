@@ -6,5 +6,5 @@ namespace App\Common\Domain\Messaging\Event;
 
 interface DomainEventBus
 {
-    public function publish(DomainEvent ...$events);
+    public function publish(DomainEvent ...$events): void;
 }
