@@ -9,30 +9,44 @@ interface DomainEvent
     /**
      * Headers constants.
      */
-    public const EVENT_ID = '_event_id';
     public const EVENT_TYPE = '_event_type';
-    public const EVENT_OCCURED_ON = '_event_occurred_on';
+    public const EVENT_ID = '_event_id';
     public const EVENT_VERSION = '_event_version';
+    public const EVENT_OCCURED_ON = '_event_occurred_on';
     public const AGGREGATE_ROOT_ID = '_aggregate_id';
-    public const AGGREGATE_ROOT_ID_TYPE = '_aggregate_root_id_type';
 
     /**
      * Return some unique string representing the event type with the format:
      *    company.service.version.event.entity.event
      * example:
      *    acme.blog.1.event.post.published
+     * @return string
      */
     public static function type(): string;
 
     /**
      * A universal unique identifier string, the way to go is using UUID version 4.
+     * @return string
      */
     public function id(): string;
 
     /**
+     * The applied numeric value representing the aggregate change.
+     * @return int
+     */
+    public function version(): int;
+
+    /**
      * The datetime string representation with DateTime::ATOM format.
+     * @return string
      */
     public function occuredOn(): string;
+
+    /**
+     * The related aggregate root id.
+     * @return string
+     */
+    public function aggregateRootId(): string;
 
     /**
      * The event body.

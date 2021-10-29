@@ -7,53 +7,102 @@ namespace App\Common\Domain\Messaging\Event;
 trait DomainEventBehavior
 {
     /**
-     * Return some unique string representing the event type with the format:
-     *    company.service.version.event.entity.event
-     * example:
-     *    acme.blog.1.event.post.published
-     */
-    abstract public static function type(): string;
-
-    /**
      * @param string $id
+     * @param int $version
      * @param string $occuredOn
+     * @param string $aggregateRootId
      * @param array<string, scalar|array<scalar>|array<string, scalar>|null> $payload
      * @param array<string, scalar|array<scalar>|null> $headers
      */
     public function __construct(
         string $id,
-        string $occurredOn,
+        int $version,
+        string $occuredOn,
+        string $aggregateRootId,
         protected array $payload,
         protected array $headers = [],
     ) {
-        $this->setId($id);
-        $this->setOcurredOn($occurredOn);
     }
 
     /**
+     * Return some unique string representing the event type with the format:
+     *    company.service.version.event.entity.event
+     * example:
+     *    acme.blog.1.event.post.published
+     * @return string
+     */
+    abstract public static function type(): string;
+
+    /**
      * A universal unique identifier string, the way to go is using UUID version 4.
+     * @return string
      */
     public function id(): string
     {
-        return (string) $this->headers['_event_id'];
+        return (string) $this->headers[DomainEvent::EVENT_ID];
+    }
+
+    /**
+     * Set the header event id.
+     * @param string $id
+     */
+    protected function setId(string $id): void
+    {
+        $this->headers[DomainEvent::EVENT_ID] = $id;
+    }
+
+    /**
+     * The applied numeric value representing the aggregate change.
+     * @return int
+     */
+    public function version(): int
+    {
+        return (int) $this->headers[DomainEvent::EVENT_VERSION];
+    }
+
+    /**
+     * Set the header event version.
+     * @param int $version
+     */
+    protected function setVersion(int $version): void
+    {
+        $this->headers[DomainEvent::EVENT_VERSION] = $version;
     }
 
     /**
      * The datetime string representation with DateTime::ATOM format.
+     * @return string
      */
     public function occuredOn(): string
     {
-        return (string) $this->headers['_event_occurred_on'];
+        return (string) $this->headers[DomainEvent::EVENT_OCCURED_ON];
     }
 
-    protected function setId(string $id): void
+    /**
+     * Set the header occurred on.
+     * @param string $occurredOn
+     */
+    protected function setOccurredOn(string $occurredOn): void
     {
-        $this->headers['_event_id'] = $id;
+        $this->headers[DomainEvent::EVENT_OCCURED_ON] = $occurredOn;
     }
 
-    protected function setOcurredOn(string $ocurredOn): void
+    /**
+     * The related aggregate root id.
+     * @return string
+     */
+    public function aggregateRootId(): string
     {
-        $this->headers['__event_occurred_on'] = $ocurredOn;
+        return (string) $this->headers[DomainEvent::AGGREGATE_ROOT_ID];
+    }
+
+    /**
+     * Set the header aggregate root id.
+     * @param string $aggregateId
+     */
+    protected function setAggregateRootId(string $aggregateRootId): void
+    {
+        $this->headers[DomainEvent::AGGREGATE_ROOT_ID] = $aggregateRootId;
     }
 
     /**
@@ -119,8 +168,8 @@ trait DomainEventBehavior
         }
 
         return new static(
-            id: $data['headers']['_event_id'],
-            occurredOn: $data['headers']['_event_occurred_on'],
+            id: $data['headers'][DomainEvent::EVENT_ID],
+            occurredOn: $data['headers'][DomainEvent::EVENT_OCCURED_ON],
             payload: (array) $data['payload'],
             headers: (array) $data['headers'],
         );
