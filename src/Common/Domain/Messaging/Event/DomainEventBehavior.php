@@ -17,6 +17,24 @@ trait DomainEventBehavior
     protected array $payload = [];
 
     /**
+     * @param string $aggregateRootId
+     * @param array<string, scalar|array<scalar>|array<string, scalar>|null> $payload
+     * @param array<string, scalar|array<scalar>|null> $headers
+     */
+    public function __construct(
+        string $aggregateRootId,
+        array $payload,
+        array $headers = [],
+    ) {
+        $this->headers = $headers;
+        $this->payload = $payload;
+        $this->setId((string) $headers[DomainEvent::EVENT_ID] ?? '');
+        $this->setVersion((int) $headers[DomainEvent::EVENT_VERSION] ?? 1);
+        $this->setOccurredOn((string) $headers[DomainEvent::EVENT_OCCURED_ON] ?? '');
+        $this->setAggregateRootId($aggregateRootId);
+    }
+
+    /**
      * A universal unique identifier string, the way to go is using UUID version 4.
      * @return string
      */
@@ -150,5 +168,16 @@ trait DomainEventBehavior
         if ($expected != $current) {
             throw DomainEventException::unmatchingTypes($expected, $current);
         }
+    }
+
+    public static function fromArray(array $data): DomainEvent
+    {
+        static::validateType($data['headers'][DomainEvent::EVENT_TYPE], static::type());
+
+        return new static(
+            aggregateRootId: (string) $data['headers'][DomainEvent::AGGREGATE_ROOT_ID],
+            payload: (array) $data['payload'],
+            headers: (array) $data['headers'],
+        );
     }
 }
