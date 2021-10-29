@@ -38,10 +38,24 @@ interface DomainEvent
 
     /**
      * Clone the current event and place or replace with a header and value.
-     *
      * @param string $key
      * @param scalar|array<scalar>|null $value
      * @return DomainEvent
      */
     public function withHeader(string $key, string|int|float|null|bool|array $value): DomainEvent;
+
+    /**
+     * Return a array representation of the event, this same payload should be used to rebuild it.
+     * @template T of scalar
+     * @return array<string, T|null|array<T>|array<string, T>>
+     */
+    public function toArray(): array;
+
+    /**
+     * Build a new DomainEvent with the specified data returned from toArray method.
+     * @template T of scalar
+     * @param array<string, T|null|array<T>|array<string, T>> $data
+     * @return DomainEvent
+     */
+    public static function fromArray(array $data): DomainEvent;
 }
