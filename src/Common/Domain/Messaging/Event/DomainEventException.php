@@ -11,9 +11,6 @@ final class DomainEventException extends Exception implements DomainError
 {
     public static function unmatchingTypes(string $expected, string $current): DomainEventException
     {
-        return new static(
-            message: sprintf('Type %s doesn\'t match type %s', $expected, $current),
-            code: 1001
-        );
+        return new static(sprintf('Input type %s doesn\'t match type %s from the called Domain Event.', $expected, $current));
     }
 }

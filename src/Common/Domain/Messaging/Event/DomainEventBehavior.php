@@ -7,24 +7,6 @@ namespace App\Common\Domain\Messaging\Event;
 trait DomainEventBehavior
 {
     /**
-     * @param string $id
-     * @param int $version
-     * @param string $occuredOn
-     * @param string $aggregateRootId
-     * @param array<string, scalar|array<scalar>|array<string, scalar>|null> $payload
-     * @param array<string, scalar|array<scalar>|null> $headers
-     */
-    public function __construct(
-        string $id,
-        int $version,
-        string $occuredOn,
-        string $aggregateRootId,
-        protected array $payload,
-        protected array $headers = [],
-    ) {
-    }
-
-    /**
      * Return some unique string representing the event type with the format:
      *    company.service.version.event.entity.event
      * example:
@@ -145,10 +127,26 @@ trait DomainEventBehavior
     public function toArray(): array
     {
         return [
-            'type' => static::type(),
-            'headers' => $this->headers(),
+            'headers' => array_merge($this->headers(), [
+                DomainEvent::EVENT_TYPE => static::type(),
+                DomainEvent::EVENT_ID => $this->id(),
+                DomainEvent::EVENT_VERSION => $this->version(),
+                DomainEvent::EVENT_OCCURED_ON => $this->occuredOn(),
+                DomainEvent::AGGREGATE_ROOT_ID => $this->aggregateRootId(),
+            ]),
             'payload' => $this->payload(),
         ];
+    }
+
+    /**
+     * Check if expected type is equal to current otherwise throws a DomainEventException.
+     * @throws DomainEventException
+     */
+    protected function validateType(string $expected): void
+    {
+        if ($expected != static::type()) {
+            throw DomainEventException::unmatchingTypes($expected, static::type());
+        }
     }
 
     /**
@@ -158,20 +156,5 @@ trait DomainEventBehavior
      * @param array<string, T|null|array<T>|array<string, T>> $data
      * @return DomainEvent
      */
-    public static function fromArray(array $data): DomainEvent
-    {
-        if ($data['type'] != static::type()) {
-            throw DomainEventException::unmatchingTypes(
-                expected: static::type(),
-                current: (string) $data['type'],
-            );
-        }
-
-        return new static(
-            id: $data['headers'][DomainEvent::EVENT_ID],
-            occurredOn: $data['headers'][DomainEvent::EVENT_OCCURED_ON],
-            payload: (array) $data['payload'],
-            headers: (array) $data['headers'],
-        );
-    }
+    abstract public static function fromArray(array $data): DomainEvent;
 }
