@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Common\Domain\Messaging\Event;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
+use Ramsey\Uuid\Uuid;
+
 trait DomainEventBehavior
 {
     /**
@@ -26,11 +31,30 @@ trait DomainEventBehavior
         array $payload,
         array $headers = [],
     ) {
-        $this->headers = $headers;
         $this->payload = $payload;
-        $this->setId((string) $headers[DomainEvent::EVENT_ID] ?? '');
-        $this->setVersion((int) $headers[DomainEvent::EVENT_VERSION] ?? 1);
-        $this->setOccurredOn((string) $headers[DomainEvent::EVENT_OCCURED_ON] ?? '');
+
+        $this->headers = array_merge($headers, [
+            DomainEvent::EVENT_TYPE => static::type()
+        ]);
+
+        $this->setId(
+            isset($headers[DomainEvent::EVENT_ID])
+                ? (string) $headers[DomainEvent::EVENT_ID]
+                : Uuid::uuid4()->toString()
+        );
+
+        $this->setOccurredOn(
+            isset($headers[DomainEvent::EVENT_OCCURED_ON])
+                ? (string) $headers[DomainEvent::EVENT_OCCURED_ON]
+                : (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ATOM)
+        );
+
+        $this->setVersion(
+            isset($headers[DomainEvent::EVENT_VERSION])
+                ? (int) $headers[DomainEvent::EVENT_VERSION]
+                : 1
+        );
+
         $this->setAggregateRootId($aggregateRootId);
     }
 
