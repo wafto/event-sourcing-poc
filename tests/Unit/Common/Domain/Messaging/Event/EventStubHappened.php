@@ -7,7 +7,7 @@ namespace Tests\Unit\Common\Domain\Messaging\Event;
 use App\Common\Domain\Messaging\Event\DomainEvent;
 use App\Common\Domain\Messaging\Event\DomainEventBehavior;
 
-class EventStubHappened implements DomainEvent
+final class EventStubHappened implements DomainEvent
 {
     use DomainEventBehavior;
 

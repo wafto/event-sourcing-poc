@@ -24,7 +24,7 @@ trait DomainEventBehavior
     /**
      * @param string $aggregateRootId
      * @param array<string, scalar|array<scalar>|array<string, scalar>|null> $payload
-     * @param array<string, scalar|array<scalar>|null> $headers
+     * @param array<string, scalar|array<scalar>|array<string, scalar>|null> $headers
      */
     public function __construct(
         string $aggregateRootId,
@@ -123,7 +123,7 @@ trait DomainEventBehavior
 
     /**
      * Set the header aggregate root id.
-     * @param string $aggregateId
+     * @param string $aggregateRootId
      */
     protected function setAggregateRootId(string $aggregateRootId): void
     {
@@ -141,7 +141,7 @@ trait DomainEventBehavior
 
     /**
      * Metadata for the event like, here we store the event id, aggregate id, version, ocurred on.
-     * @return array<string, scalar|array<scalar>|null>
+     * @return array<string, scalar|array<scalar>|array<string, scalar>|null>
      */
     public function headers(): array
     {
@@ -151,7 +151,7 @@ trait DomainEventBehavior
     /**
      * Clone the current event and place or replace with a header and value.
      * @param string $key
-     * @param scalar|array<scalar>|null $value
+     * @param scalar|array<scalar>|array<string, scalar>|null $value
      * @return DomainEvent
      */
     public function withHeader(string $key, string|int|float|null|bool|array $value): DomainEvent
@@ -164,8 +164,7 @@ trait DomainEventBehavior
 
     /**
      * Return a array representation of the event, this same payload should be used to rebuild it.
-     * @template T of scalar
-     * @return array<string, T|null|array<T>|array<string, T>>
+     * @return array{headers: array, payload: array}
      */
     public function toArray(): array
     {
@@ -188,9 +187,16 @@ trait DomainEventBehavior
         }
     }
 
+    /**
+     * Build a new DomainEvent with the specified data returned from toArray method.
+     * @template T of scalar
+     * @throws DomainEventException
+     * @param array<string, T|null|array<T>|array<string, T>> $data
+     * @return DomainEvent
+     */
     public static function fromArray(array $data): DomainEvent
     {
-        static::validateType($data['headers'][DomainEvent::EVENT_TYPE], static::type());
+        static::validateType((string) $data['headers'][DomainEvent::EVENT_TYPE], static::type());
 
         return new static(
             aggregateRootId: (string) $data['headers'][DomainEvent::AGGREGATE_ROOT_ID],

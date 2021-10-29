@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class DomainEventBehaviorTest extends TestCase
 {
     /** @test */
-    public function can_create_domain_events_using_the_combination_of_interface_and_trait()
+    public function can_create_domain_events_using_the_combination_of_interface_and_trait(): void
     {
         $event = new EventStubHappened('9cfc4e5f-c515-41f7-8a12-a815f082c06a', []);
 
@@ -18,7 +18,7 @@ class DomainEventBehaviorTest extends TestCase
     }
 
     /** @test */
-    public function domain_event_should_always_be_initialized_with_id_occured_on_version_and_aggregate_id_headers()
+    public function domain_event_should_always_be_initialized_with_id_occured_on_version_and_aggregate_id_headers(): void
     {
         $event = new EventStubHappened('9cfc4e5f-c515-41f7-8a12-a815f082c06a', []);
         $headers = $event->headers();
@@ -31,7 +31,7 @@ class DomainEventBehaviorTest extends TestCase
     }
 
     /** @test */
-    public function domain_event_can_be_exported_to_array_and_rebuilded_from_the_same_array()
+    public function domain_event_can_be_exported_to_array_and_rebuilded_from_the_same_array(): void
     {
         $original = new EventStubHappened('9cfc4e5f-c515-41f7-8a12-a815f082c06a', [
             'numeric' => 1,
@@ -51,7 +51,7 @@ class DomainEventBehaviorTest extends TestCase
     }
 
     /** @test */
-    public function with_header_method_returns_a_new_instance_with_the_given_header_change()
+    public function with_header_method_returns_a_new_instance_with_the_given_header_change(): void
     {
         $original = new EventStubHappened('9cfc4e5f-c515-41f7-8a12-a815f082c06a', []);
         $copy = $original->withHeader(DomainEvent::EVENT_VERSION, $original->version() + 1);

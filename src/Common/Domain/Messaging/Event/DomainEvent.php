@@ -56,22 +56,21 @@ interface DomainEvent
 
     /**
      * Metadata for the event like, here we store the event id, aggregate id, version, ocurred on.
-     * @return array<string, scalar|array<scalar>|null>
+     * @return array<string, scalar|array<scalar>|array<string, scalar>|null>
      */
     public function headers(): array;
 
     /**
      * Clone the current event and place or replace with a header and value.
      * @param string $key
-     * @param scalar|array<scalar>|null $value
+     * @param scalar|array<scalar>|array<string, scalar>|null $value
      * @return DomainEvent
      */
     public function withHeader(string $key, string|int|float|null|bool|array $value): DomainEvent;
 
     /**
      * Return a array representation of the event, this same payload should be used to rebuild it.
-     * @template T of scalar
-     * @return array<string, T|null|array<T>|array<string, T>>
+     * @return array{headers: array, payload: array}
      */
     public function toArray(): array;
 
