@@ -170,13 +170,7 @@ trait DomainEventBehavior
     public function toArray(): array
     {
         return [
-            'headers' => array_merge($this->headers(), [
-                DomainEvent::EVENT_TYPE => static::type(),
-                DomainEvent::EVENT_ID => $this->id(),
-                DomainEvent::EVENT_VERSION => $this->version(),
-                DomainEvent::EVENT_OCCURED_ON => $this->occuredOn(),
-                DomainEvent::AGGREGATE_ROOT_ID => $this->aggregateRootId(),
-            ]),
+            'headers' => $this->headers(),
             'payload' => $this->payload(),
         ];
     }
