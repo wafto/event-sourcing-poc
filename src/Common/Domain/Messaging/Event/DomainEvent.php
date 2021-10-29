@@ -70,7 +70,7 @@ interface DomainEvent
 
     /**
      * Return a array representation of the event, this same payload should be used to rebuild it.
-     * @return array{headers: array, payload: array}
+     * @return array{headers: array<string, scalar|array<scalar>|array<string, scalar>|null>, payload: array<string, scalar|array<scalar>|array<string, scalar>|null>}
      */
     public function toArray(): array;
 
@@ -78,7 +78,7 @@ interface DomainEvent
      * Build a new DomainEvent with the specified data returned from toArray method.
      * @template T of scalar
      * @throws DomainEventException
-     * @param array<string, T|null|array<T>|array<string, T>> $data
+     * @param array{headers: array<string, scalar|array<scalar>|array<string, scalar>|null>, payload: array<string, scalar|array<scalar>|array<string, scalar>|null>} $data
      * @return DomainEvent
      */
     public static function fromArray(array $data): DomainEvent;

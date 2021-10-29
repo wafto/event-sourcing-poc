@@ -12,12 +12,12 @@ use Ramsey\Uuid\Uuid;
 trait DomainEventBehavior
 {
     /**
-     * @var array<string, scalar|array<scalar>|array<string, scalar>|null>
+     * @var array<string, scalar|array<scalar>|array<string, scalar>|null> $headers
      */
     protected array $headers = [];
 
     /**
-     * @var array<string, scalar|array<scalar>|null>
+     * @var array<string, scalar|array<scalar>|array<string, scalar>|null> $payload
      */
     protected array $payload = [];
 
@@ -39,121 +39,75 @@ trait DomainEventBehavior
 
         $this->setId(
             isset($headers[DomainEvent::EVENT_ID])
-                ? (string) $headers[DomainEvent::EVENT_ID]
+                ? strval($headers[DomainEvent::EVENT_ID])
                 : Uuid::uuid4()->toString()
         );
 
         $this->setOccurredOn(
             isset($headers[DomainEvent::EVENT_OCCURED_ON])
-                ? (string) $headers[DomainEvent::EVENT_OCCURED_ON]
+                ? strval($headers[DomainEvent::EVENT_OCCURED_ON])
                 : (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ATOM)
         );
 
         $this->setVersion(
             isset($headers[DomainEvent::EVENT_VERSION])
-                ? (int) $headers[DomainEvent::EVENT_VERSION]
+                ? intval($headers[DomainEvent::EVENT_VERSION])
                 : 1
         );
 
         $this->setAggregateRootId($aggregateRootId);
     }
 
-    /**
-     * A universal unique identifier string, the way to go is using UUID version 4.
-     * @return string
-     */
     public function id(): string
     {
-        return (string) $this->headers[DomainEvent::EVENT_ID];
+        return strval($this->headers[DomainEvent::EVENT_ID]);
     }
 
-    /**
-     * Set the header event id.
-     * @param string $id
-     */
     protected function setId(string $id): void
     {
         $this->headers[DomainEvent::EVENT_ID] = $id;
     }
 
-    /**
-     * The applied numeric value representing the aggregate change.
-     * @return int
-     */
     public function version(): int
     {
-        return (int) $this->headers[DomainEvent::EVENT_VERSION];
+        return intval($this->headers[DomainEvent::EVENT_VERSION]);
     }
 
-    /**
-     * Set the header event version.
-     * @param int $version
-     */
     protected function setVersion(int $version): void
     {
         $this->headers[DomainEvent::EVENT_VERSION] = $version;
     }
 
-    /**
-     * The datetime string representation with DateTime::ATOM format.
-     * @return string
-     */
     public function occuredOn(): string
     {
-        return (string) $this->headers[DomainEvent::EVENT_OCCURED_ON];
+        return strval($this->headers[DomainEvent::EVENT_OCCURED_ON]);
     }
 
-    /**
-     * Set the header occurred on.
-     * @param string $occurredOn
-     */
     protected function setOccurredOn(string $occurredOn): void
     {
         $this->headers[DomainEvent::EVENT_OCCURED_ON] = $occurredOn;
     }
 
-    /**
-     * The related aggregate root id.
-     * @return string
-     */
     public function aggregateRootId(): string
     {
-        return (string) $this->headers[DomainEvent::AGGREGATE_ROOT_ID];
+        return strval($this->headers[DomainEvent::AGGREGATE_ROOT_ID]);
     }
 
-    /**
-     * Set the header aggregate root id.
-     * @param string $aggregateRootId
-     */
     protected function setAggregateRootId(string $aggregateRootId): void
     {
         $this->headers[DomainEvent::AGGREGATE_ROOT_ID] = $aggregateRootId;
     }
 
-    /**
-     * The event body.
-     * @return array<string, scalar|array<scalar>|array<string, scalar>|null>
-     */
     public function payload(): array
     {
         return $this->payload;
     }
 
-    /**
-     * Metadata for the event like, here we store the event id, aggregate id, version, ocurred on.
-     * @return array<string, scalar|array<scalar>|array<string, scalar>|null>
-     */
     public function headers(): array
     {
         return $this->headers;
     }
 
-    /**
-     * Clone the current event and place or replace with a header and value.
-     * @param string $key
-     * @param scalar|array<scalar>|array<string, scalar>|null $value
-     * @return DomainEvent
-     */
     public function withHeader(string $key, string|int|float|null|bool|array $value): DomainEvent
     {
         $clone = clone $this;
@@ -162,10 +116,6 @@ trait DomainEventBehavior
         return $clone;
     }
 
-    /**
-     * Return a array representation of the event, this same payload should be used to rebuild it.
-     * @return array{headers: array, payload: array}
-     */
     public function toArray(): array
     {
         return [
@@ -174,12 +124,6 @@ trait DomainEventBehavior
         ];
     }
 
-    /**
-     * Check if expected type is equal to current otherwise throws a DomainEventException.
-     * @param string $expected
-     * @param string $current
-     * @throws DomainEventException
-     */
     protected static function validateType(string $expected, string $current): void
     {
         if ($expected != $current) {
@@ -187,19 +131,12 @@ trait DomainEventBehavior
         }
     }
 
-    /**
-     * Build a new DomainEvent with the specified data returned from toArray method.
-     * @template T of scalar
-     * @throws DomainEventException
-     * @param array<string, T|null|array<T>|array<string, T>> $data
-     * @return DomainEvent
-     */
     public static function fromArray(array $data): DomainEvent
     {
-        static::validateType((string) $data['headers'][DomainEvent::EVENT_TYPE], static::type());
+        static::validateType(strval($data['headers'][DomainEvent::EVENT_TYPE]), static::type());
 
         return new static(
-            aggregateRootId: (string) $data['headers'][DomainEvent::AGGREGATE_ROOT_ID],
+            aggregateRootId: strval($data['headers'][DomainEvent::AGGREGATE_ROOT_ID]),
             payload: (array) $data['payload'],
             headers: (array) $data['headers'],
         );
