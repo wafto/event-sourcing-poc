@@ -7,13 +7,14 @@ namespace App\Common\Domain\Messaging\Event;
 trait DomainEventBehavior
 {
     /**
-     * Return some unique string representing the event type with the format:
-     *    company.service.version.event.entity.event
-     * example:
-     *    acme.blog.1.event.post.published
-     * @return string
+     * @var array<string, scalar|array<scalar>|array<string, scalar>|null>
      */
-    abstract public static function type(): string;
+    protected array $headers = [];
+
+    /**
+     * @var array<string, scalar|array<scalar>|null>
+     */
+    protected array $payload = [];
 
     /**
      * A universal unique identifier string, the way to go is using UUID version 4.
@@ -140,21 +141,14 @@ trait DomainEventBehavior
 
     /**
      * Check if expected type is equal to current otherwise throws a DomainEventException.
+     * @param string $expected
+     * @param string $current
      * @throws DomainEventException
      */
-    protected function validateType(string $expected): void
+    protected static function validateType(string $expected, string $current): void
     {
-        if ($expected != static::type()) {
-            throw DomainEventException::unmatchingTypes($expected, static::type());
+        if ($expected != $current) {
+            throw DomainEventException::unmatchingTypes($expected, $current);
         }
     }
-
-    /**
-     * Build a new DomainEvent with the specified data returned from toArray method.
-     * @template T of scalar
-     * @throws DomainEventException
-     * @param array<string, T|null|array<T>|array<string, T>> $data
-     * @return DomainEvent
-     */
-    abstract public static function fromArray(array $data): DomainEvent;
 }

@@ -9,11 +9,11 @@ interface DomainEvent
     /**
      * Headers constants.
      */
-    public const EVENT_TYPE = '_event_type';
-    public const EVENT_ID = '_event_id';
-    public const EVENT_VERSION = '_event_version';
-    public const EVENT_OCCURED_ON = '_event_occurred_on';
-    public const AGGREGATE_ROOT_ID = '_aggregate_id';
+    public const EVENT_TYPE = '__event_type';
+    public const EVENT_ID = '__event_id';
+    public const EVENT_VERSION = '__event_version';
+    public const EVENT_OCCURED_ON = '__event_occurred_on';
+    public const AGGREGATE_ROOT_ID = '__aggregate_root_id';
 
     /**
      * Return some unique string representing the event type with the format:
@@ -78,6 +78,7 @@ interface DomainEvent
     /**
      * Build a new DomainEvent with the specified data returned from toArray method.
      * @template T of scalar
+     * @throws DomainEventException
      * @param array<string, T|null|array<T>|array<string, T>> $data
      * @return DomainEvent
      */
