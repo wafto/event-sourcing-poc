@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Common\Domain\Messaging\Event;
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use DateTimeZone;
-use Ramsey\Uuid\Uuid;
-
 trait DomainEventBehavior
 {
     /**
@@ -34,38 +29,17 @@ trait DomainEventBehavior
         $this->payload = $payload;
 
         $this->headers = array_merge($headers, [
-            DomainEvent::EVENT_TYPE => static::type()
+            DomainEvent::EVENT_TYPE => static::type(),
+            DomainEvent::EVENT_ID => $headers[DomainEvent::EVENT_ID] ?? null,
+            DomainEvent::EVENT_OCCURED_ON => $headers[DomainEvent::EVENT_OCCURED_ON] ?? null,
+            DomainEvent::EVENT_VERSION => $headers[DomainEvent::EVENT_VERSION] ?? 1,
+            DomainEvent::AGGREGATE_ROOT_ID => $aggregateRootId,
         ]);
-
-        $this->setId(
-            isset($headers[DomainEvent::EVENT_ID])
-                ? strval($headers[DomainEvent::EVENT_ID])
-                : Uuid::uuid4()->toString()
-        );
-
-        $this->setOccurredOn(
-            isset($headers[DomainEvent::EVENT_OCCURED_ON])
-                ? strval($headers[DomainEvent::EVENT_OCCURED_ON])
-                : (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ATOM)
-        );
-
-        $this->setVersion(
-            isset($headers[DomainEvent::EVENT_VERSION])
-                ? intval($headers[DomainEvent::EVENT_VERSION])
-                : 1
-        );
-
-        $this->setAggregateRootId($aggregateRootId);
     }
 
-    public function id(): string
+    public function id(): ?string
     {
-        return strval($this->headers[DomainEvent::EVENT_ID]);
-    }
-
-    protected function setId(string $id): void
-    {
-        $this->headers[DomainEvent::EVENT_ID] = $id;
+        return null === $this->headers[DomainEvent::EVENT_ID] ? null : strval($this->headers[DomainEvent::EVENT_ID]);
     }
 
     public function version(): int
@@ -73,29 +47,14 @@ trait DomainEventBehavior
         return intval($this->headers[DomainEvent::EVENT_VERSION]);
     }
 
-    protected function setVersion(int $version): void
+    public function occuredOn(): ?string
     {
-        $this->headers[DomainEvent::EVENT_VERSION] = $version;
-    }
-
-    public function occuredOn(): string
-    {
-        return strval($this->headers[DomainEvent::EVENT_OCCURED_ON]);
-    }
-
-    protected function setOccurredOn(string $occurredOn): void
-    {
-        $this->headers[DomainEvent::EVENT_OCCURED_ON] = $occurredOn;
+        return null === $this->headers[DomainEvent::EVENT_OCCURED_ON] ? null : strval($this->headers[DomainEvent::EVENT_OCCURED_ON]);
     }
 
     public function aggregateRootId(): string
     {
         return strval($this->headers[DomainEvent::AGGREGATE_ROOT_ID]);
-    }
-
-    protected function setAggregateRootId(string $aggregateRootId): void
-    {
-        $this->headers[DomainEvent::AGGREGATE_ROOT_ID] = $aggregateRootId;
     }
 
     public function payload(): array
@@ -124,16 +83,11 @@ trait DomainEventBehavior
         ];
     }
 
-    protected static function validateType(string $expected, string $current): void
-    {
-        if ($expected != $current) {
-            throw DomainEventException::unmatchingTypes($expected, $current);
-        }
-    }
-
     public static function fromArray(array $data): DomainEvent
     {
-        static::validateType(strval($data['headers'][DomainEvent::EVENT_TYPE]), static::type());
+        if ($data['headers'][DomainEvent::EVENT_TYPE] != static::type()) {
+            throw DomainEventException::unmatchingTypes(strval($data['headers'][DomainEvent::EVENT_TYPE]), static::type());
+        }
 
         return new static(
             aggregateRootId: strval($data['headers'][DomainEvent::AGGREGATE_ROOT_ID]),

@@ -28,7 +28,7 @@ interface DomainEvent
      * A universal unique identifier string, the way to go is using UUID version 4.
      * @return string
      */
-    public function id(): string;
+    public function id(): ?string;
 
     /**
      * The applied numeric value representing the aggregate change.
@@ -40,7 +40,7 @@ interface DomainEvent
      * The datetime string representation with DateTime::ATOM format.
      * @return string
      */
-    public function occuredOn(): string;
+    public function occuredOn(): ?string;
 
     /**
      * The related aggregate root id.
