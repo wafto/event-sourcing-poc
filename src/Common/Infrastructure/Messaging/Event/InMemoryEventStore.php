@@ -47,18 +47,37 @@ final class InMemoryEventStore implements EventStore
      */
     private function add(DomainEvent $event): void
     {
-        $lastEvent = $this->store[count($this->store) - 1];
+        $lastVersionFromAggregateRoot = $this->lastVersionForAggregateRootId($event->aggregateRootId());
 
-        if ($event->version() <= $lastEvent->version()) {
+        if ($event->version() <= $lastVersionFromAggregateRoot) {
             throw DomainEventException::cantPersistOlderVersioned($event);
         }
 
-        $expectedVersion = $lastEvent->version() + 1;
+        $expectedVersion = $lastVersionFromAggregateRoot + 1;
 
         if ($event->version() != $expectedVersion) {
             throw DomainEventException::cantPersistWithMissingVersion($event, $expectedVersion);
         }
 
         $this->store[] = $event;
+    }
+
+    /**
+     * param string $aggregateRootId
+     * @return int<0, max>
+     */
+    private function lastVersionForAggregateRootId(string $aggregateRootId): int
+    {
+        $storeCount = count($this->store);
+
+        for ($i = $storeCount - 1; $i >= 0; $i -= 1) {
+            $event = $this->store[$i];
+
+            if ($event->aggregateRootId() === $aggregateRootId) {
+                return $event->version();
+            }
+        }
+
+        return 0;
     }
 }
