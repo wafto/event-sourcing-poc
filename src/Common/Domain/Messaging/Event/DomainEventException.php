@@ -18,8 +18,9 @@ final class DomainEventException extends Exception implements DomainError
     {
         return new static(
             sprintf(
-                'Domain event with id: %s can\'t be persisted because the current stream has already used that version number.',
+                'Domain event with id: %s can\'t be persisted because the current stream has already used the version number: %s.',
                 $event->id(),
+                $event->version(),
             )
         );
     }
