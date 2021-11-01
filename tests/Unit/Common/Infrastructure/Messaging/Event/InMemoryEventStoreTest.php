@@ -76,7 +76,7 @@ class InMemoryEventStoreTest extends TestCase
         $this->assertCount(4, iterator_to_array($store->retrieve($aggregateRootId)->events()));
     }
 
-    /** @testta */
+    /** @test */
     public function can_add_new_domain_events_to_event_store(): void
     {
         $aggregateRootId = '9cfc4e5f-c515-41f7-8a12-a815f082c06a';
@@ -146,6 +146,6 @@ class InMemoryEventStoreTest extends TestCase
         $this->assertCount(6, $eventsAfterAddition);
         $this->assertCount(2, $eventsAfterAdditionAndVersion);
         $this->assertEquals('96a43863-5cea-471d-a2a6-b613e06469d2', $eventsAfterAdditionAndVersion[0]->id());
-        $this->assertEquals('96a43863-5cea-471d-a2a6-b613e06469d2', $eventsAfterAdditionAndVersion[1]->id());
+        $this->assertEquals('3eafc050-55f3-4a75-9ca0-12db8b380300', $eventsAfterAdditionAndVersion[1]->id());
     }
 }
