@@ -13,10 +13,16 @@ use App\Common\Infrastructure\Messaging\Event\ArrayEventStream;
 final class InMemoryEventStore implements EventStore
 {
     /**
+     * @var array<DomainEvent> $store
+     */
+    private array $store = [];
+
+    /**
      * @param array<DomainEvent> $store
      */
-    public function __construct(private array $store = [])
+    public function __construct(array $store = [])
     {
+        $this->persist(...$store);
     }
 
     /**

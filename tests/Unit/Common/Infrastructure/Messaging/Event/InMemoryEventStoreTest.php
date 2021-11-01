@@ -57,6 +57,14 @@ class InMemoryEventStoreTest extends TestCase
                 ]
             ),
             new EventB(
+                '34f98149-e1ea-446a-9668-a0ef633f0dc7',
+                payload: [],
+                headers: [
+                    DomainEvent::EVENT_ID => 'd480bdef-8d5c-4644-b55e-3fd9ceef41c8',
+                    DomainEvent::EVENT_VERSION => 1,
+                ]
+            ),
+            new EventB(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -70,6 +78,14 @@ class InMemoryEventStoreTest extends TestCase
                 headers: [
                     DomainEvent::EVENT_ID => 'd451864a-350e-4a49-8414-c48c3d9608df',
                     DomainEvent::EVENT_VERSION => 4,
+                ]
+            ),
+            new EventA(
+                '34f98149-e1ea-446a-9668-a0ef633f0dc7',
+                payload: [],
+                headers: [
+                    DomainEvent::EVENT_ID => 'e380bdef-7d5c-3544-b55e-3fd9ceef41c8',
+                    DomainEvent::EVENT_VERSION => 2,
                 ]
             ),
         ];
