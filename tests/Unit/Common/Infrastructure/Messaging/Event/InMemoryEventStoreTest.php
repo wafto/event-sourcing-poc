@@ -5,34 +5,57 @@ declare(strict_types=1);
 namespace Tests\Unit\Common\Infrastructure\Messaging\Event;
 
 use App\Common\Domain\Messaging\Event\DomainEvent;
-use App\Common\Domain\Messaging\Event\EventStream;
-use App\Common\Infrastructure\Messaging\Event\ArrayEventStream;
+use App\Common\Domain\Messaging\Event\DomainEventBehavior;
+use App\Common\Domain\Messaging\Event\EventStore;
+use App\Common\Infrastructure\Messaging\Event\InMemoryEventStore;
 use PHPUnit\Framework\TestCase;
+
+final class EventA implements DomainEvent
+{
+    use DomainEventBehavior;
+
+    public static function type(): string
+    {
+        return 'acme.test.1.event.stub.a';
+    }
+}
+
+final class EventB implements DomainEvent
+{
+    use DomainEventBehavior;
+
+    public static function type(): string
+    {
+        return 'acme.test.1.event.stub.b';
+    }
+}
 
 class InMemoryEventStoreTest extends TestCase
 {
-    /**
-     * @var array<DomainEvent>
-     */
-    private array $store = [];
-
-    public function persist(DomainEvent ...$events): void
+    /** @test */
+    public function can_create_an_inmemory_event_store_object(): void
     {
-        foreach ($events as $event) {
-            $this->store[] = $event;
-        }
+        $store = new InMemoryEventStore([]);
+
+        $this->assertInstanceOf(EventStore::class, $store);
     }
 
-    public function retrieve(string $aggregateRootId, int $afterVersion = 0): EventStream
+    /** @testta */
+    public function can_add_new_domain_events_to_event_store(): void
     {
-        $result = [];
+        /** Arrange */
+        $aggregateRootId = '9cfc4e5f-c515-41f7-8a12-a815f082c06a';
 
-        foreach ($this->store as $event) {
-            if ($aggregateRootId === $event->aggregateRootId() && $event->version() > $afterVersion) {
-                $result[] = $event;
-            }
-        }
+        $store = new InMemoryEventStore(store: [
+            new EventA($aggregateRootId, payload: [], headers: [DomainEvent::EVENT_VERSION => 1]),
+            new EventB($aggregateRootId, payload: [], headers: [DomainEvent::EVENT_VERSION => 2]),
+            new EventB($aggregateRootId, payload: [], headers: [DomainEvent::EVENT_VERSION => 3]),
+            new EventA($aggregateRootId, payload: [], headers: [DomainEvent::EVENT_VERSION => 4]),
+        ]);
 
-        return new ArrayEventStream($aggregateRootId, $result);
+        /** Act */
+
+
+        /** Assert */
     }
 }
