@@ -11,18 +11,26 @@ use App\Common\Domain\Messaging\Event\EventSubscriber;
 final class InMemoryEventBus implements EventBus
 {
     /**
-     * @var array<string, array<EventSubscriberReflection>>
+     * @var array<EventSubscriberReflection>
      */
-    private array $subscriber = [];
+    private array $subscribers = [];
 
-    public function __construct(EventSubscriber ...$subscriber)
+    public function __construct(EventSubscriber ...$subscribers)
     {
-        foreach ($subscriber as $subscriber) {
-            $reflection = new EventSubscriberReflection($subscriber);
-        }
+        $this->subscribers = array_map(
+            fn (EventSubscriber $subscriber) => new EventSubscriberReflection($subscriber),
+            $subscribers
+        );
     }
 
     public function publish(DomainEvent ...$events): void
     {
+        foreach ($events as $event) {
+            foreach ($this->subscribers as $reflection) {
+                foreach ($reflection->listenersFor($event::class) as $method) {
+                    $reflection->subscriber()->$method($event);
+                }
+            }
+        }
     }
 }
