@@ -11,7 +11,7 @@ use App\Common\Domain\Messaging\Event\ListensTo;
 final class LoggingEventSubscriber implements EventSubscriber
 {
     /**
-     * @var array<string>
+     * @var array<array<string>>
      */
     public array $log = [];
 
