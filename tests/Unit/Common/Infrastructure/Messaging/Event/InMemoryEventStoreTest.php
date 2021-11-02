@@ -5,31 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Common\Infrastructure\Messaging\Event;
 
 use App\Common\Domain\Messaging\Event\DomainEvent;
-use App\Common\Domain\Messaging\Event\DomainEventBehavior;
 use App\Common\Domain\Messaging\Event\DomainEventException;
 use App\Common\Domain\Messaging\Event\EventStore;
 use App\Common\Infrastructure\Messaging\Event\InMemoryEventStore;
 use PHPUnit\Framework\TestCase;
-
-final class EventA implements DomainEvent
-{
-    use DomainEventBehavior;
-
-    public static function type(): string
-    {
-        return 'acme.test.1.event.stub.a';
-    }
-}
-
-final class EventB implements DomainEvent
-{
-    use DomainEventBehavior;
-
-    public static function type(): string
-    {
-        return 'acme.test.1.event.stub.b';
-    }
-}
 
 class InMemoryEventStoreTest extends TestCase
 {
@@ -40,7 +19,7 @@ class InMemoryEventStoreTest extends TestCase
     private function events(string $aggregateRootId): array
     {
         return [
-            new EventA(
+            new EventStubA(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -48,7 +27,7 @@ class InMemoryEventStoreTest extends TestCase
                     DomainEvent::EVENT_VERSION => 1,
                 ]
             ),
-            new EventB(
+            new EventStubB(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -56,7 +35,7 @@ class InMemoryEventStoreTest extends TestCase
                     DomainEvent::EVENT_VERSION => 2,
                 ]
             ),
-            new EventB(
+            new EventStubB(
                 '34f98149-e1ea-446a-9668-a0ef633f0dc7',
                 payload: [],
                 headers: [
@@ -64,7 +43,7 @@ class InMemoryEventStoreTest extends TestCase
                     DomainEvent::EVENT_VERSION => 1,
                 ]
             ),
-            new EventB(
+            new EventStubB(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -72,7 +51,7 @@ class InMemoryEventStoreTest extends TestCase
                     DomainEvent::EVENT_VERSION => 3,
                 ]
             ),
-            new EventA(
+            new EventStubA(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -80,7 +59,7 @@ class InMemoryEventStoreTest extends TestCase
                     DomainEvent::EVENT_VERSION => 4,
                 ]
             ),
-            new EventA(
+            new EventStubA(
                 '34f98149-e1ea-446a-9668-a0ef633f0dc7',
                 payload: [],
                 headers: [
@@ -110,7 +89,7 @@ class InMemoryEventStoreTest extends TestCase
         $store = new InMemoryEventStore(store: $this->events($aggregateRootId));
 
         $newEvents = [
-            new EventA(
+            new EventStubA(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -118,7 +97,7 @@ class InMemoryEventStoreTest extends TestCase
                     DomainEvent::EVENT_VERSION => 5,
                 ]
             ),
-            new EventB(
+            new EventStubB(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -153,7 +132,7 @@ class InMemoryEventStoreTest extends TestCase
         $store = new InMemoryEventStore(store: $this->events($aggregateRootId));
 
         $store->persist(
-            new EventA(
+            new EventStubA(
                 $aggregateRootId,
                 payload: [],
                 headers: [
@@ -175,7 +154,7 @@ class InMemoryEventStoreTest extends TestCase
         $store = new InMemoryEventStore(store: $this->events($aggregateRootId));
 
         $store->persist(
-            new EventA(
+            new EventStubA(
                 $aggregateRootId,
                 payload: [],
                 headers: [
