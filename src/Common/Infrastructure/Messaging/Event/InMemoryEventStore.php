@@ -70,7 +70,7 @@ final class InMemoryEventStore implements EventStore
 
     /**
      * param string $aggregateRootId
-     * @return int<0, max>
+     * @return int
      */
     private function lastVersionForAggregateRootId(string $aggregateRootId): int
     {

@@ -19,9 +19,6 @@ final class InMemoryEventBus implements EventBus
     {
         foreach ($subscriber as $subscriber) {
             $reflection = new EventSubscriberReflection($subscriber);
-            foreach ($reflection->listensTo() as [$event, $listener]) {
-                //$this->subscriber[$event][] =
-            }
         }
     }
 

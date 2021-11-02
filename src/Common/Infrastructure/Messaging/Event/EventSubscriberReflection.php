@@ -10,9 +10,15 @@ use ReflectionClass;
 
 final class EventSubscriberReflection
 {
+    /**
+     * @var array<array{string, string}>
+     */
+    private array $listeners = [];
+
     public function __construct(
         private EventSubscriber $subscriber,
     ) {
+        $this->resolveListeners();
     }
 
     public function subscriber(): EventSubscriber
@@ -21,27 +27,30 @@ final class EventSubscriberReflection
     }
 
     /**
-     * @template T of array{class-string<DomainEvent>, array<class-string<EventSubscriber>, string>}
-     * @return array<T>
+     * @return array<string>
      */
-    public function listensTo(): array
+    public function listenersFor(string $event): array
     {
-        $reflection = new ReflectionClass($this->subscriber());
+        return array_map(
+            fn ($data) => $data[1],
+            array_filter($this->listeners, fn ($data) => $data[0] === $event)
+        );
+    }
+
+    private function resolveListeners(): void
+    {
         $listeners = [];
+        $reflection = new ReflectionClass($this->subscriber());
 
         foreach ($reflection->getMethods() as $method) {
             $attributes = $method->getAttributes(ListensTo::class);
 
             foreach ($attributes as $attribute) {
                 $listener = $attribute->newInstance();
-
-                $listeners[] = [
-                    $listener->event(),
-                    [$this->subscriber()::class, $method->getName()]
-                ];
+                $listeners[] = [$listener->event(), $method->getName()];
             }
         }
 
-        return $listeners;
+        $this->listeners = $listeners;
     }
 }
