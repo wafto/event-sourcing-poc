@@ -10,6 +10,9 @@ use App\Common\Domain\Messaging\Event\ListensTo;
 
 final class LoggingEventSubscriber implements EventSubscriber
 {
+    /**
+     * @var array<string>
+     */
     public array $log = [];
 
     #[ListensTo(event: EventStubA::class)]
