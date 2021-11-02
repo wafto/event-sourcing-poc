@@ -18,13 +18,13 @@ final class LoggingEventSubscriber implements EventSubscriber
     #[ListensTo(event: EventStubA::class)]
     public function onEventStubA(EventStubA $event): void
     {
-        $this->log[] = $event::type();
+        $this->log[] = [__FUNCTION__, $event::class];
     }
 
     #[ListensTo(event: EventStubA::class)]
     #[ListensTo(event: EventStubC::class)]
     public function onEventAonEventC(DomainEvent $event): void
     {
-        $this->log[] = $event::type();
+        $this->log[] = [__FUNCTION__, $event::class];
     }
 }
