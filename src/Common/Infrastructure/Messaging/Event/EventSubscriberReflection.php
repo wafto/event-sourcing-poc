@@ -31,9 +31,11 @@ final class EventSubscriberReflection
      */
     public function listenersFor(string $event): array
     {
-        return array_map(
-            fn ($data) => $data[1],
-            array_filter($this->listeners, fn ($data) => $data[0] === $event)
+        return array_values(
+            array_map(
+                fn ($data) => $data[1],
+                array_filter($this->listeners, fn ($data) => $data[0] === $event)
+            )
         );
     }
 
