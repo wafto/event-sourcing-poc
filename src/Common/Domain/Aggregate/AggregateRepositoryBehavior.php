@@ -24,7 +24,7 @@ class AggregateRepositoryBehavior implements AggregateRepository
     ) {
     }
 
-    public function persist(AggregateRoot $aggregate): void
+    public function save(AggregateRoot $aggregate): void
     {
         $events = array_map(
             fn ($event) => $this->decorator->decorate($event),
@@ -35,7 +35,7 @@ class AggregateRepositoryBehavior implements AggregateRepository
         $this->bus->publish(...$events);
     }
 
-    public function retrieve(AggregateRootId $aggregateRootId): ?AggregateRoot
+    public function find(AggregateRootId $aggregateRootId): ?AggregateRoot
     {
         $stream = $this->store->retrieve($aggregateRootId->value());
         return $this->classname::reconstitute($stream);

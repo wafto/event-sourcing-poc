@@ -6,7 +6,7 @@ namespace App\Common\Domain\Aggregate;
 
 interface AggregateRepository
 {
-    public function persist(AggregateRoot $aggregate): void;
+    public function save(AggregateRoot $aggregate): void;
 
-    public function retrieve(AggregateRootId $aggregateRootId): ?AggregateRoot;
+    public function find(AggregateRootId $aggregateRootId): ?AggregateRoot;
 }
