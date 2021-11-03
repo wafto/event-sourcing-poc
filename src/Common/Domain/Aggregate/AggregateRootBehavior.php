@@ -18,22 +18,6 @@ trait AggregateRootBehavior
      */
     protected array $recordedDomainEvents = [];
 
-    protected function __construct(AggregateRootId $id)
-    {
-        $this->aggregateRootId = $id;
-    }
-
-    public static function reconstitute(EventStream $stream): AggregateRootBehavior
-    {
-        $aggregate = new self(AggregateRootId::fromString($stream->aggregateRootId()));
-
-        foreach ($stream->events() as $event) {
-            $aggregate->apply($event);
-        }
-
-        return $aggregate;
-    }
-
     public function aggregateRootId(): AggregateRootId
     {
         return $this->aggregateRootId;

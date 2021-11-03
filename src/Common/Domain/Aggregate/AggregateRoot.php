@@ -9,7 +9,7 @@ use App\Common\Domain\Messaging\Event\EventStream;
 
 interface AggregateRoot
 {
-    public static function reconstitute(EventStream $stream): AggregateRoot;
+    public static function reconstitute(EventStream $stream): ?AggregateRoot;
 
     public function aggregateRootId(): AggregateRootId;
 
