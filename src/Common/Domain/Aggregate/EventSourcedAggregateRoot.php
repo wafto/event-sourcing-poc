@@ -7,7 +7,7 @@ namespace App\Common\Domain\Aggregate;
 use App\Common\Domain\Messaging\Event\DomainEvent;
 use App\Common\Domain\Messaging\Event\EventStream;
 
-abstract class AggregateRootBehavior implements AggregateRoot
+abstract class EventSourcedAggregateRoot implements AggregateRoot
 {
     protected AggregateRootId $aggregateRootId;
 
