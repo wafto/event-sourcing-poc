@@ -8,10 +8,16 @@ use App\Common\Domain\Messaging\Event\DomainEvent;
 use App\Common\Domain\Messaging\Event\DomainEventDecorator;
 use Ramsey\Uuid\Uuid;
 
-class DomainEventIdDecorator implements DomainEventDecorator
+final class DomainEventIdDecorator implements DomainEventDecorator
 {
+    public function __construct(private ?DomainEventDecorator $next = null)
+    {
+    }
+
     public function decorate(DomainEvent $event): DomainEvent
     {
-        return $event->withHeader(DomainEvent::EVENT_ID, Uuid::uuid4()->toString());
+        $event = $event->withHeader(DomainEvent::EVENT_ID, Uuid::uuid4()->toString());
+
+        return null === $this->next ? $event : $this->next->decorate($event);
     }
 }

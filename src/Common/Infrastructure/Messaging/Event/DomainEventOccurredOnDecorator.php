@@ -10,11 +10,17 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 
-class DomainEventOccurredOnDecorator implements DomainEventDecorator
+final class DomainEventOccurredOnDecorator implements DomainEventDecorator
 {
+    public function __construct(private ?DomainEventDecorator $next = null)
+    {
+    }
+
     public function decorate(DomainEvent $event): DomainEvent
     {
         $datetime = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-        return $event->withHeader(DomainEvent::EVENT_OCCURED_ON, $datetime->format(DateTimeInterface::ATOM));
+        $event = $event->withHeader(DomainEvent::EVENT_OCCURED_ON, $datetime->format(DateTimeInterface::ATOM));
+
+        return null === $this->next ? $event : $this->next->decorate($event);
     }
 }
