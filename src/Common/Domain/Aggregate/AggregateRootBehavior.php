@@ -7,7 +7,7 @@ namespace App\Common\Domain\Aggregate;
 use App\Common\Domain\Messaging\Event\DomainEvent;
 use App\Common\Domain\Messaging\Event\EventStream;
 
-abstract class EventSourcedAggregateRoot implements AggregateRoot
+trait AggregateRootBehavior
 {
     protected AggregateRootId $aggregateRootId;
 
@@ -23,7 +23,7 @@ abstract class EventSourcedAggregateRoot implements AggregateRoot
         $this->aggregateRootId = $id;
     }
 
-    public static function reconstitute(EventStream $stream): AggregateRoot
+    public static function reconstitute(EventStream $stream): AggregateRootBehavior
     {
         $aggregate = new self(AggregateRootId::fromString($stream->aggregateRootId()));
 
