@@ -38,6 +38,6 @@ class AggregateRepositoryBehavior implements AggregateRepository
     public function find(AggregateRootId $aggregateRootId): ?AggregateRoot
     {
         $stream = $this->store->retrieve($aggregateRootId->value());
-        return $this->classname::reconstitute($stream);
+        return $stream->events()->valid() ? $this->classname::reconstitute($stream) : null;
     }
 }

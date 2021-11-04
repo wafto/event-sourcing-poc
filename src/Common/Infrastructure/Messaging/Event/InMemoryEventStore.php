@@ -26,7 +26,7 @@ final class InMemoryEventStore implements EventStore
     }
 
     /**
-     *  throws DomainEventException
+     * @throws DomainEventException
      */
     public function persist(DomainEvent ...$events): void
     {
@@ -49,7 +49,7 @@ final class InMemoryEventStore implements EventStore
     }
 
     /**
-     *  throws DomainEventException
+     *  @throws DomainEventException
      */
     private function add(DomainEvent $event): void
     {
@@ -69,7 +69,7 @@ final class InMemoryEventStore implements EventStore
     }
 
     /**
-     * param string $aggregateRootId
+     * @param string $aggregateRootId
      * @return int
      */
     private function lastVersionForAggregateRootId(string $aggregateRootId): int
